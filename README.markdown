@@ -31,12 +31,12 @@ In this case the following fields are created:
     name_last_name
     name_suffix
 
-    birthname_prefix
-    birthname_first_name
-    birthname_middle_name
-    birthname_intercalation
-    birthname_last_name
-    birthname_suffix
+    birth_name_prefix
+    birth_name_first_name
+    birth_name_middle_name
+    birth_name_intercalation
+    birth_name_last_name
+    birth_name_suffix
 
     female
     created_at
@@ -58,6 +58,7 @@ Now put this thing to use:
     p.name.first_name # Matthijs
     p.name.middle_name # Jacobus
     p.name.last_name # Groen
+    p.name.short_name # M.J. Groen
 
     p = Person.new
     p.name = "Ariejan de Vroom"

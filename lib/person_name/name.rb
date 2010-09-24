@@ -128,8 +128,7 @@ class PersonName::Name
 				parts << "#{name.first.upcase}."
 			end
 		end
-		parts << full_last_name
-		parts * " "
+		[parts.join, full_last_name] * " "
 	end
 
 	NAME_PARTS.each do |part|
