@@ -5,6 +5,31 @@ describe "Has Person Name" do
     clean_database!
   end
 
+  describe "Automatic name assignment" do
+    before(:each) do
+      clean_database!
+      @person = Person.new
+    end
+
+    it "should have an accessor for the defined name fields" do
+      @person.should respond_to(:name)
+    end
+
+  end
+
+  describe "Automatic name assignment" do
+    before(:each) do
+      clean_database!
+      @person = Person.new
+    end
+
+    it "should assign name parts to the correct fields" do
+      @person.name = "Matthijs Groen"
+      @person.name.first_name.should == "Matthijs"
+    end
+
+  end
+
 #  it "should provide a class method 'taggable?' that is false for untaggable models" do
 #    UntaggableModel.should_not be_taggable
 #  end
