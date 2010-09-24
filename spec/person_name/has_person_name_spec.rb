@@ -15,82 +15,55 @@ describe "Has Person Name" do
       @person.should respond_to(:name)
     end
 
-  end
-
-  describe "Automatic name assignment" do
-    before(:each) do
-      clean_database!
-      @person = Person.new
-    end
-
-    it "should assign name parts to the correct fields" do
-      @person.name = "Matthijs Groen"
+    it "should read active_record attributes" do
+      @person.name_first_name = "Matthijs"
       @person.name.first_name.should == "Matthijs"
+
+      @person.name_last_name = "Groen"
+      @person.name.last_name.should == "Groen"
+
+      @person.name.to_s.should == "Matthijs Groen"
+    end
+
+    it "should assign active_record attributes" do
+      @person.name.first_name = "Matthijs"
+      @person.name_first_name.should == "Matthijs"
+
+      @person.name.last_name = "Groen"
+      @person.name_last_name.should == "Groen"
+    end
+
+    it "should split up name parts and assign to correct fields" do
+      test_fields = %w(prefix first_name middle_name intercalation last_name suffix)
+      test_cases = [
+        [nil, "Matthijs", nil, nil, "Groen", nil],
+        [nil, "Matthijs", "Jacobus", nil, "Groen", nil],
+        [nil, "Frans", nil, "van der", "Sluis", nil],
+        [nil, "Maria", "Cornelia Hendrina", nil, "Damen-van Valenberg", nil],
+        [nil, "Dirk", "Jan", "van de", "Abeele", nil],
+        [nil, "Yolanthe", "Cabau", "van", "Kasbergen", nil],
+      ]
+
+      test_cases.each do |fields|
+        string = fields.compact.join(" ")
+        @person = Person.new
+        @person.name = string
+
+        test_fields.each_with_index do |field, index|
+          @person.name.send(field).should == fields[index]
+        end
+      end
+    end
+
+    it "should remember corrections" do
+      @person.name.first_name = "Yolanthe"
+      @person.name.last_name = "Cabau van Kasbergen"
+
+      @person.name = "Yolanthe Truuske Cabau van Kasbergen"
+      @person.name.middle_name.should == "Truuske"
+      @person.name.last_name.should == "Cabau van Kasbergen"
     end
 
   end
-
-#  it "should provide a class method 'taggable?' that is false for untaggable models" do
-#    UntaggableModel.should_not be_taggable
-#  end
-
-#  describe "Taggable Method Generation" do
-#    before(:each) do
-#      clean_database!
-#      TaggableModel.write_inheritable_attribute(:tag_types, [])
-#      TaggableModel.acts_as_taggable_on(:tags, :languages, :skills, :needs, :offerings)
-#      @taggable = TaggableModel.new(:name => "Bob Jones")
-#    end
-#
-#    it "should respond 'true' to taggable?" do
-#      @taggable.class.should be_taggable
-#    end
-#
-#    it "should create a class attribute for tag types" do
-#      @taggable.class.should respond_to(:tag_types)
-#    end
-#
-#    it "should create an instance attribute for tag types" do
-#      @taggable.should respond_to(:tag_types)
-#    end
-#
-#    it "should have all tag types" do
-#      @taggable.tag_types.should == [:tags, :languages, :skills, :needs, :offerings]
-#    end
-#
-#    it "should generate an association for each tag type" do
-#      @taggable.should respond_to(:tags, :skills, :languages)
-#    end
-#
-#    it "should add tagged_with and tag_counts to singleton" do
-#      TaggableModel.should respond_to(:tagged_with, :tag_counts)
-#    end
-#
-#    it "should generate a tag_list accessor/setter for each tag type" do
-#      @taggable.should respond_to(:tag_list, :skill_list, :language_list)
-#      @taggable.should respond_to(:tag_list=, :skill_list=, :language_list=)
-#    end
-#
-#    it "should generate a tag_list accessor, that includes owned tags, for each tag type" do
-#      @taggable.should respond_to(:all_tags_list, :all_skills_list, :all_languages_list)
-#    end
-#  end
-
-#  describe "Single Table Inheritance" do
-#    before do
-#      @taggable = TaggableModel.new(:name => "taggable")
-#      @inherited_same = InheritingTaggableModel.new(:name => "inherited same")
-#      @inherited_different = AlteredInheritingTaggableModel.new(:name => "inherited different")
-#    end
-#
-#    it "should pass on tag contexts to STI-inherited models" do
-#      @inherited_same.should respond_to(:tag_list, :skill_list, :language_list)
-#      @inherited_different.should respond_to(:tag_list, :skill_list, :language_list)
-#    end
-#
-#    it "should have tag contexts added in altered STI models" do
-#      @inherited_different.should respond_to(:part_list)
-#    end
-#  end
 
 end

@@ -5,10 +5,10 @@
 
 Gem::Specification.new do |s|
   s.name = %q{person-name}
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Michael Bleigh"]
+  s.authors = ["Matthijs Groen"]
   s.date = %q{2010-09-24}
   s.description = %q{Manages all person name fields (prefix, first name, middle name, intercalation, last name, suffix)}
   s.email = %q{matthijs.groen@gmail.com}
@@ -22,9 +22,10 @@ Gem::Specification.new do |s|
      "README.markdown",
      "Rakefile",
      "VERSION",
-     "lib/person_name.rb",
+     "lib/person-name.rb",
      "lib/person_name/migration_support.rb",
      "lib/person_name/name.rb",
+     "rails/init.rb",
      "spec/database.yml",
      "spec/database.yml.sample",
      "spec/models.rb",

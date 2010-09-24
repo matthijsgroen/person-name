@@ -1,62 +1,51 @@
-require 'rubygems'
-require 'rake'
+begin
+  # Rspec 1.3.0
+  require 'spec/rake/spectask'
+
+  desc 'Default: run specs'
+  task :default => :spec
+  Spec::Rake::SpecTask.new do |t|
+    t.spec_files = FileList["spec/**/*_spec.rb"]
+  end
+
+  Spec::Rake::SpecTask.new('rcov') do |t|
+    t.spec_files = FileList["spec/**/*_spec.rb"]
+    t.rcov = true
+    t.rcov_opts = ['--exclude', 'spec']
+  end
+  
+rescue LoadError
+  # Rspec 2.0
+  require 'rspec/core/rake_task'
+
+  desc 'Default: run specs'
+  task :default => :spec  
+  Rspec::Core::RakeTask.new do |t|
+    t.pattern = "spec/**/*_spec.rb"
+  end
+  
+  Rspec::Core::RakeTask.new('rcov') do |t|
+    t.pattern = "spec/**/*_spec.rb"
+    t.rcov = true
+    t.rcov_opts = ['--exclude', 'spec']
+  end
+
+rescue LoadError
+  puts "Rspec not available. Install it with: gem install rspec"  
+end
 
 begin
   require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "person_name"
-    gem.summary = %Q{Easy editing of person names.}
-    gem.description = %Q{
-      Manages all person name fields (prefix, first name, middle name, intercalation, last name, suffix)
-    }
-    gem.email = "matthijs.groen@gmail.com"
-    gem.homepage = "http://matthijsgroen.posterous.com"
-    gem.authors = ["Matthijs Groen"]
-    #gem.add_development_dependency "shoulda"
-    gem.add_dependency "activerecord", "~> 3.0.0"
-    gem.add_dependency "activesupport", "~> 3.0.0"
-    gem.add_dependency "arel", "~> 1.0.1"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+  Jeweler::Tasks.new do |gemspec|
+    gemspec.name = "person-name"
+    gemspec.summary = "Easy editing of person names."
+    gemspec.description = "Manages all person name fields (prefix, first name, middle name, intercalation, last name, suffix)"
+    gemspec.email = "matthijs.groen@gmail.com"
+    gemspec.homepage = "http://github.com/matthijsgroen/person-name"
+    gemspec.authors = ["Matthijs Groen"]
+    gemspec.files =  FileList["[A-Z]*", "{generators,lib,spec,rails}/**/*"] - FileList["**/*.log"]
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-end
-
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.libs << 'vendor/rails/activerecord/lib'
-  test.libs << 'vendor/rails/activesupport/lib'
-  test.libs << 'vendor/arel/lib'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
-end
-
-begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/test_*.rb'
-    test.verbose = true
-  end
-rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-  end
-end
-
-# Don't check dependencies since we're testing with vendored libraries
-# task :test => :check_dependencies
-
-task :default => :test
-
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "meta_where #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+  puts "Jeweler not available. Install it with: gem install jeweler"
 end
