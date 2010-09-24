@@ -1,0 +1,17 @@
+sqlite3:
+  adapter: sqlite3
+  database: has_person_name.sqlite3
+
+mysql:
+  adapter: mysql
+  hostname: localhost
+  username: root
+  password:
+  database: has_person_name
+
+postgresql:
+  adapter: postgresql
+  hostname: localhost
+  username: postgres
+  password:
+  database: has_person_name

@@ -1,1 +1,5 @@
 .idea
+*.log
+*.sqlite3
+.bundle
+spec/database.yml
