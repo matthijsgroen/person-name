@@ -28,11 +28,11 @@ module PersonName
 
     def short_name include_middle_names = true
       parts = []
-      parts << "#{self.first_name.first.upcase}." if self.first_name
+      parts << "#{self.first_name[0,1].upcase}." if self.first_name
       if include_middle_names and self.middle_name
         names = self.middle_name.split(" ")
         names.each do |name|
-          parts << "#{name.first.upcase}."
+          parts << "#{name[0,1].upcase}."
         end
       end
       [parts.join, full_last_name] * " "

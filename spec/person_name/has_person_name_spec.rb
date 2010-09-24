@@ -5,6 +5,18 @@ describe "Has Person Name" do
     clean_database!
   end
 
+  describe "Some model without names" do
+    it "should not have person names" do
+      PersonWithoutName.should_not have_person_names
+    end
+  end
+
+  describe "Some model with names" do
+    it "should have person names" do
+      Person.should have_person_names
+    end
+  end
+
   describe "Automatic name assignment" do
     before(:each) do
       clean_database!
@@ -33,6 +45,17 @@ describe "Has Person Name" do
       @person.name_last_name.should == "Groen"
     end
 
+    it "should be able to show a short name" do
+      @person.name = "Matthijs Jacobus Groen"
+      @person.name.short_name.should == "M.J. Groen"
+      @person.name.short_name(false).should == "M. Groen"
+    end
+
+    it "should be able to show a full last name" do
+      @person.name = "Frans van der Sluis"
+      @person.name.full_last_name.should == "van der Sluis"
+    end
+
     it "should split up name parts and assign to correct fields" do
       test_fields = %w(prefix first_name middle_name intercalation last_name suffix)
       test_cases = [
@@ -40,6 +63,9 @@ describe "Has Person Name" do
         [nil, "Matthijs", "Jacobus", nil, "Groen", nil],
         [nil, "Frans", nil, "van der", "Sluis", nil],
         [nil, "Maria", "Cornelia Hendrina", nil, "Damen-van Valenberg", nil],
+        [nil, "Maria", "Cornelia Hendrina", nil, "Damen - van Valenberg", nil],
+        [nil, "Maria", "Cornelia Hendrina", nil, "Damen- van Valenberg", nil],
+        [nil, "Maria", "Cornelia Hendrina", nil, "Damen -van Valenberg", nil],
         [nil, "Dirk", "Jan", "van de", "Abeele", nil],
         [nil, "Yolanthe", "Cabau", "van", "Kasbergen", nil],
       ]
