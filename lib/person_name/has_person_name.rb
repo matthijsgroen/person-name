@@ -62,7 +62,7 @@ module PersonName
 
 				def person_name_for field
 					@person_names ||= {}
-					@person_names[field] ||= PersonName::Name.new(field, self)
+					@person_names[field] ||= PersonName::ActiveRecordPersonName.new(field, self)
 				end
 
 				def set_person_name_for field, new_name
