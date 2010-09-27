@@ -9,8 +9,8 @@ require "person_name/migration_support"
 
 $LOAD_PATH.shift
 
-if defined?(ActiveRecord::ConnectionAdapters::SchemaStatements)
-  ActiveRecord::ConnectionAdapters::SchemaStatements.send :include, PersonName::MigrationSupport
+if defined?(ActiveRecord::ConnectionAdapters::TableDefinition)
+  ActiveRecord::ConnectionAdapters::TableDefinition.send :include, PersonName::MigrationSupport
 end
 if defined?(ActiveRecord::Base)
   ActiveRecord::Base.send :include, PersonName::ActiveRecord
