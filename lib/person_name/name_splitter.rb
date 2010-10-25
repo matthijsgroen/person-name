@@ -9,6 +9,7 @@ module PersonName
     # Splits the given name in individual name parts in form of a hash.
     # You can supply a hash with existing values for editing purposes.
     def self.split(new_name_str, existing_values = {})
+      return {} if new_name_str.nil?
       parts = new_name_str.split " "
       names = []
       stage = :prefix

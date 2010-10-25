@@ -98,6 +98,13 @@ describe "Has Person Name" do
       @person.name.last_name.should == "Cabau van Kasbergen"
     end
 
+    it "should accept a nil value" do
+      @person.name = nil
+      @person.save
+
+      @person.name.to_s.should == ""
+    end
+
   end
 
   describe "dynamic scopes" do
