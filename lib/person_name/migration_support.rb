@@ -6,11 +6,11 @@ module ActiveRecord
 
       def person_name(name, *args)
         options = args.extract_options!
+        column("#{name}".to_sym, :string, :null => true)
         name_parts = PersonName::NameSplitter::NAME_PARTS
         name_parts.each do |part|
           column("#{name}_#{part}".to_sym, :string, :null => true)
         end
-        column("#{name}".to_sym, :string, :null => true)
       end
 
     end
