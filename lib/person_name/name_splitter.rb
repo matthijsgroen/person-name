@@ -3,67 +3,101 @@ module PersonName
 
     NAME_PARTS = %w(prefix first_name middle_name intercalation last_name suffix)
 
+    DEFAULT_PREFIXES = %w(Mr. Dhr. Drs. Prof. Mevr. Mej. Mrs.)
+    DEFAULT_SUFFIXES = %w(jr. Phd.)
+
+    # Splits the given name in individual name parts in form of a hash.
+    # You can supply a hash with existing values for editing purposes.
     def self.split(new_name_str, existing_values = {})
       parts = new_name_str.split " "
       names = []
       stage = :prefix
+
+      # value to remember for merging
       remember = nil
       parts.each_with_index do |part, index|
+
+        # some helper variables
         is_upcase = (part[0,1] == part[0,1].upcase)
         has_dash = part.include? "-"
         is_last = (parts.length - 1) == index
 
-        fp = [remember, part].compact.join(" ")
+        # add the remember part to the current part but make a note if we used a remembered value
+        full_part = [remember, part].compact.join(" ")
+        did_remember = (full_part != part)
+        suffix_remember = remember
         remember = nil
-        did_remember = (fp != part)
-        if valid_prefix?(part) and stage == :prefix # if the part is a valid prefix, mark it as such
-          names = add_to_last_if :prefix, fp, names
-        elsif valid_suffix?(part) and stage == :name # if the part is a valid suffix, mark it as such
-          names = add_to_last_if :suffix, fp, names
-        elsif part == "-" # if the part is a dash
-          if last_stored = names.pop # retrieve the previous name part (if any) and store it with the dash
-            # for the part to come (remember)
-            remember = [last_stored[0], fp].compact.join(" ")
-          else
-            # if there is no previous part, just store the current part for later
-            remember = fp
-          end
-        elsif !is_upcase and !did_remember # intercalation words are never with a capital
-          names = add_to_last_if :intercalation, fp, names
-          stage = :name
-        elsif !is_upcase and did_remember
-          remember = fp
-        elsif is_upcase and !has_dash
-          names << [fp, :name]
-          stage = :name
-        elsif is_upcase and has_dash
-          if fp.ends_with? "-"
-            if is_last
-              names << [fp, :name]
-              stage = :name
+
+        # Mr. Mrs. Mevr. Mej.
+        if valid_prefix?(part) and stage == :prefix and not did_remember # if the part is a valid prefix, mark it as such
+          names = add_to_last_if :prefix, part, names
+
+        # Jr. Phd.
+        elsif valid_suffix?(part) # if the part is a valid suffix, mark it as such
+          names << [suffix_remember, :name] if did_remember
+          names = add_to_last_if :suffix, part, names
+        else
+          remember = nil
+
+          # Damen - van Valkenburg
+          if part == "-" # if the part is a dash
+            if last_stored = names.pop # retrieve the previous name part (if any) and store it with the dash
+              # for the part to come (remember)
+              remember = [last_stored[0], full_part].compact.join(" ")
             else
-              remember = fp
+              # if there is no previous part, just store the current part for later
+              remember = full_part
             end
-          else
-            if fp.starts_with?("-") and last_stored = names.pop
-              fp = [last_stored[0], fp].compact.join(" ")
-            end
-            dash_parts = fp.split "-"
-            if dash_parts.last.first == dash_parts.last.first.upcase
-              names << [fp, :name]
-              stage = :name
-            elsif is_last
-              names << [fp, :name]
-              stage = :name
+
+          # van de Sloot
+          elsif !is_upcase and !did_remember # intercalation words are never with a capital
+            names = add_to_last_if :intercalation, full_part, names
+            stage = :name
+
+          # Groen in het Woud
+          elsif !is_upcase and did_remember
+            remember = full_part
+
+          # Groen
+          elsif is_upcase and !has_dash
+            names << [full_part, :name]
+            stage = :name
+
+          # Groen-teboer
+          elsif is_upcase and has_dash
+            if full_part.ends_with? "-"
+              if is_last
+                names << [full_part, :name]
+                stage = :name
+              else
+                remember = full_part
+              end
             else
-              remember = fp
+              if full_part.starts_with?("-") and last_stored = names.pop
+                last_stored_name = last_stored[0].split(" ")
+                last_part = last_stored_name.pop
+                names << [last_stored_name.join(" "), last_stored[1]] unless last_stored_name.empty?
+                full_part = [last_part, full_part].compact.join(" ")
+              end
+              dash_parts = full_part.split "-"
+              if dash_parts.last[0,1] == dash_parts.last[0,1].upcase
+                names << [full_part, :name]
+                stage = :name
+              elsif is_last
+                names << [full_part, :name]
+                stage = :name
+              else
+                remember = full_part
+              end
             end
           end
         end
       end
+      names << [remember, :name] if remember
 
       new_name = {}
       stage = O[:prefix]
+      #puts names.inspect
 
       names.each_with_index do |value, index|
         name, name_type = *value
@@ -139,11 +173,11 @@ module PersonName
     end
 
     def self.valid_prefix? name_part
-      false
+      DEFAULT_PREFIXES.include? name_part
     end
 
     def self.valid_suffix? name_part
-      false
+      DEFAULT_SUFFIXES.include? name_part
     end
 
   end

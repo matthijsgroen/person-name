@@ -40,22 +40,46 @@ module PersonName
         base.send :include, PersonName::ActiveRecord::Core::InstanceMethods
         base.extend PersonName::ActiveRecord::Core::ClassMethods
         base.initialize_person_names
+        #base.define_scopes
       end
 
       module ClassMethods
+
         def initialize_person_names
           name_types.map(&:to_s).each do |name_type|
-            class_eval %(
-							def #{name_type}
-								person_name_for('#{name_type}')
-							end
-
-							def #{name_type}= new_name
-								set_person_name_for('#{name_type}', new_name)
-							end
-						)
+            script = %(
+              def #{name_type}
+                person_name_for('#{name_type}')
+              end
+            )
+            script += %(
+              def #{name_type}= new_name
+                set_person_name_for('#{name_type}', new_name)
+              end
+            )
+            class_eval script
           end
         end
+
+#        def define_scopes
+#          name_types.map(&:to_s).each do |field_name|
+#            concat_construct = [%(IFNULL(`#{field_name}_prefix`, ""))]
+#            [:first_name, :middle_name, :intercalation, :last_name, :suffix].each { |element|
+#              concat_construct << %(IF(ISNULL(`#{field_name}_#{element}`), "", CONCAT(" ", `#{field_name}_#{element}`)))
+#            }
+#            script = %(
+#              scope :with_#{field_name}, lambda { |name|
+#                where('TRIM(CONCAT(#{concat_construct.join(", ")})) = ?', name)
+#              }
+#              def find_by_#{field_name}(name)
+#                self.with_#{field_name}(name).first
+#              end
+#            )
+#            puts script
+#            instance_eval script
+#          end
+#        end
+
       end
 
       module InstanceMethods
@@ -66,6 +90,7 @@ module PersonName
         end
 
         def set_person_name_for field, new_name
+          write_attribute(field, new_name)
           person_name_for(field).full_name = new_name
         end
 

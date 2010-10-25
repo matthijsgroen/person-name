@@ -61,11 +61,18 @@ describe "Has Person Name" do
       test_cases = [
         [nil, "Matthijs", nil, nil, "Groen", nil],
         [nil, "Matthijs", "Jacobus", nil, "Groen", nil],
-        [nil, "Frans", nil, "van der", "Sluis", nil],
+        [nil, "Frans", nil, "van der", "Sluis", "Phd."],
         [nil, "Maria", "Cornelia Hendrina", nil, "Damen-van Valenberg", nil],
-        [nil, "Maria", "Cornelia Hendrina", nil, "Damen - van Valenberg", nil],
+        ["Mevr.", "Maria", "Cornelia Hendrina", nil, "Damen - van Valenberg", nil],
         [nil, "Maria", "Cornelia Hendrina", nil, "Damen- van Valenberg", nil],
         [nil, "Maria", "Cornelia Hendrina", nil, "Damen -van Valenberg", nil],
+        [nil, "Maria", "Cornelia Hendrina", "van", nil, nil],
+        [nil, "- Maria", "Cornelia Hendrina", "van", "Dingen-", nil],
+        ["Mevr.", "Maria", "Mej. Cornelia Hendrina", "van", "Dingen -", nil],
+        [nil, "Maria", "Cornelia Hendrina", "van", "Dingen-van", nil],
+        [nil, "Maria", "Cornelia Hendrina", "van", "Groen-Teboer", nil],
+        [nil, "Maria", "Cornelia Hendrina", "van", "Groen-van Phd. Lala", "jr."],
+        [nil, "Maria", "Cornelia Hendrina", "van", "Groen-van", "Phd. jr."],
         [nil, "Dirk", "Jan", "van de", "Abeele", nil],
         [nil, "Yolanthe", "Cabau", "van", "Kasbergen", nil],
       ]
@@ -75,6 +82,7 @@ describe "Has Person Name" do
         @person = Person.new
         @person.name = string
 
+        #puts "in #{fields.inspect}"
         test_fields.each_with_index do |field, index|
           @person.name.send(field).should == fields[index]
         end
@@ -88,6 +96,19 @@ describe "Has Person Name" do
       @person.name = "Yolanthe Truuske Cabau van Kasbergen"
       @person.name.middle_name.should == "Truuske"
       @person.name.last_name.should == "Cabau van Kasbergen"
+    end
+
+  end
+
+  describe "dynamic scopes" do
+    before(:each) do
+      clean_database!
+      @person = Person.new :name => "Matthijs Jacobus Groen"
+      @person.save
+    end
+
+    it "should have a working with_name scope" do
+      Person.find_by_name("Matthijs Jacobus Groen").should == @person
     end
 
   end
