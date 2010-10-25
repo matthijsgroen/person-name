@@ -40,6 +40,8 @@ module PersonName
         base.send :include, PersonName::ActiveRecord::Core::InstanceMethods
         base.extend PersonName::ActiveRecord::Core::ClassMethods
         base.initialize_person_names
+        base.before_validation :start_name_validation
+        base.after_validation :stop_name_validation
         #base.define_scopes
       end
 
@@ -87,11 +89,22 @@ module PersonName
         def person_name_for field
           @person_names ||= {}
           @person_names[field] ||= PersonName::ActiveRecordPersonName.new(field, self)
+          @name_validation ? @person_names[field].full_name : @person_names[field]
         end
 
         def set_person_name_for field, new_name
           write_attribute(field, new_name)
           person_name_for(field).full_name = new_name
+        end
+
+        private
+
+        def start_name_validation
+          @name_validation = true
+        end
+
+        def stop_name_validation
+          @name_validation = false
         end
 
       end

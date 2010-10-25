@@ -107,15 +107,21 @@ describe "Has Person Name" do
 
   end
 
-  describe "dynamic scopes" do
-    before(:each) do
+  describe "active record specifics" do
+
+    it "should have a working with_name scope" do
       clean_database!
       @person = Person.new :name => "Matthijs Jacobus Groen"
       @person.save
+
+      Person.find_by_name("Matthijs Jacobus Groen").should == @person
     end
 
-    it "should have a working with_name scope" do
-      Person.find_by_name("Matthijs Jacobus Groen").should == @person
+    it "should validate names" do
+      @person = NamePerson.new :name => "Matthijs Groen"
+      @person.should_not be_valid
+      @person.birth_name = "Matthijs Jacobus Groen"
+      @person.should be_valid
     end
 
   end

@@ -8,4 +8,6 @@ end
 class NamePerson < ActiveRecord::Base
   has_person_name
   has_person_name :birth_name
+
+  validates :birth_name, :presence => true
 end
