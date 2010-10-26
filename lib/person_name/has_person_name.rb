@@ -37,9 +37,10 @@ module PersonName
     module Core
 
       def self.included(base)
-        base.send :include, PersonName::ActiveRecord::Core::InstanceMethods
         base.extend PersonName::ActiveRecord::Core::ClassMethods
+        base.send :include, PersonName::ActiveRecord::Core::InstanceMethods
         base.initialize_person_names
+
         base.before_validation :start_name_validation
         base.after_validation :stop_name_validation
         #base.define_scopes
@@ -86,6 +87,54 @@ module PersonName
 
       module InstanceMethods
 
+        # when using forms to edit the full name or the indiviual form parts
+        # it is possible that both fields (The aggregated one _and_ the individual ones)
+        # get posted back to the model. So, wich fields are the correct edited ones?
+        #
+        # To determine this, we use this development mantra:
+        # 1. If the user is able to edit it in one field, he should.
+        #   Therefore, if the aggregated field is posted, this is the most recent one
+        #   and should override the seperated parts
+        # 2. If only individual parts are edited, there should not be an aggregated
+        #   value in the form
+        # 3. If the view allowes the user to edit the aggregated field and the seperated fields,
+        #   the field should make sure the values are comparable (eg. the separated values combined
+        #   should be equal to the aggregated one). If this is the case, the separated fields
+        #   will rule over the aggregated one, since it is more detailed and adds up to the same result.
+        def attributes=(new_attributes, guard_protected_attributes = true)
+          return unless new_attributes.is_a?(Hash)
+          attributes = new_attributes.stringify_keys
+
+          self.class.name_types.map(&:to_s).each do |name_base|
+            if attributes.has_key? name_base # only add behaviour if the full name is supplied
+              full = attributes[name_base]
+
+              existing_part_fields = []
+              part_values = []
+              PersonName::NameSplitter::NAME_PARTS.each do |name_part|
+                test_field = "#{name_base}_#{name_part}"
+                if attributes.has_key? test_field
+                  existing_part_fields << test_field
+                  part_values << attributes[test_field]
+                else
+                  part_values << send(test_field.to_sym)
+                end
+              end
+              if part_values.compact.join(" ") == full
+                attributes.delete name_base
+              else
+                existing_part_fields.each do |part_field|
+                  attributes.delete part_field
+                end
+              end
+            end
+          end
+
+          super attributes, guard_protected_attributes
+        end
+
+        private
+
         def person_name_for field
           @person_names ||= {}
           @person_names[field] ||= PersonName::ActiveRecordPersonName.new(field, self)
@@ -96,8 +145,6 @@ module PersonName
           write_attribute(field, new_name)
           person_name_for(field).full_name = new_name
         end
-
-        private
 
         def start_name_validation
           @name_validation = true

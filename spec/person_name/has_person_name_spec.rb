@@ -124,6 +124,31 @@ describe "Has Person Name" do
       @person.should be_valid
     end
 
+    it "should use the full name if post attributes don't match" do
+      @person = NamePerson.new
+      @person.attributes = {
+              :name_first_name => "Henk",
+              :name_middle_name => "Jacobus",
+              :name_last_name => "Groen",
+              :name => "Matthijs Jacobus Groen"
+      }
+      @person.name.to_s.should == "Matthijs Jacobus Groen"
+    end
+
+    it "should use the individual fields if post attributes match" do
+      @person = NamePerson.new
+      @person.attributes = {
+              :name => "Matthijs Jacobus Groen",
+              :name_first_name => "Matthijs",
+              :name_middle_name => nil,
+              :name_last_name => "Jacobus Groen"
+      }
+      @person.name.to_s.should == "Matthijs Jacobus Groen"
+      @person.name.last_name.should == "Jacobus Groen"
+
+    end
+
+
   end
 
 end
