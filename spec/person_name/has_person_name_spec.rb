@@ -148,6 +148,30 @@ describe "Has Person Name" do
 
     end
 
+    it "should use the individual fields as edit post attributes match almost" do
+      @person = NamePerson.new
+      @person.attributes = {
+              :name => "Yolanthe Truuske Cabau van Kasbergen",
+              :name_first_name => "Yolanthe",
+              :name_middle_name => nil,
+              :name_last_name => "Cabau van Kasbergen"
+      }
+      @person.name.to_s.should == "Yolanthe Truuske Cabau van Kasbergen"
+      @person.name.last_name.should == "Cabau van Kasbergen"
+
+    end
+
+    it "should use the aggregated field if the posted attributes are not all available" do
+      @person = NamePerson.new
+      @person.attributes = {
+              :name => "Henk de Slager",
+              :name_first_name => "Henk",
+              :name_last_name => "Zanger"
+      }
+      @person.name.to_s.should == "Henk de Slager"
+      @person.name.full_last_name.should == "de Slager"
+
+    end
 
   end
 

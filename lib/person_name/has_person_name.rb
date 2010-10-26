@@ -111,11 +111,13 @@ module PersonName
 
               existing_part_fields = []
               part_values = []
+              part_hash = {}
               PersonName::NameSplitter::NAME_PARTS.each do |name_part|
                 test_field = "#{name_base}_#{name_part}"
                 if attributes.has_key? test_field
                   existing_part_fields << test_field
                   part_values << attributes[test_field]
+                  part_hash[name_part.to_sym] = attributes[test_field]
                 else
                   part_values << send(test_field.to_sym)
                 end
@@ -123,8 +125,27 @@ module PersonName
               if part_values.compact.join(" ") == full
                 attributes.delete name_base
               else
-                existing_part_fields.each do |part_field|
-                  attributes.delete part_field
+                # try to use existing fields as editing values of full name
+                new_part_values = PersonName::NameSplitter.split(attributes[name_base], part_hash)
+                assignments_valid = nil
+
+                # test if there is no conflict
+                PersonName::NameSplitter::NAME_PARTS.each do |name_part|
+                  test_field = "#{name_base}_#{name_part}"
+                  if attributes.has_key? test_field
+                    attributes[test_field] = new_part_values[name_part.to_sym]
+                    assignments_valid = true if assignments_valid.nil?
+                  else
+                    assignments_valid = false unless new_part_values[name_part.to_sym].nil?
+                  end
+                end
+
+                if assignments_valid
+                  attributes.delete name_base
+                else
+                  existing_part_fields.each do |part_field|
+                    attributes.delete part_field
+                  end
                 end
               end
             end
