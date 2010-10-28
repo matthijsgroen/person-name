@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{person-name}
-  s.version = "0.2.9"
+  s.version = "0.2.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Matthijs Groen"]
-  s.date = %q{2010-10-26}
+  s.date = %q{2010-10-28}
   s.description = %q{Manages all person name fields (prefix, first name, middle name, intercalation, last name, suffix)}
   s.email = %q{matthijs.groen@gmail.com}
   s.extra_rdoc_files = [
@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
      "spec/database.yml",
      "spec/database.yml.sample",
      "spec/models.rb",
+     "spec/person_name/has_person_name.sqlite3",
      "spec/person_name/has_person_name_spec.rb",
      "spec/schema.rb",
      "spec/spec_helper.rb"

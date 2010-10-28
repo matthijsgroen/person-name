@@ -145,7 +145,12 @@ describe "Has Person Name" do
       }
       @person.name.to_s.should == "Matthijs Jacobus Groen"
       @person.name.last_name.should == "Jacobus Groen"
+      @person.birth_name = "Test fill for Validation"
 
+      @person.save.should be_true
+
+      p = NamePerson.find_by_name "Matthijs Jacobus Groen"
+      p.should == @person
     end
 
     it "should use the individual fields as edit post attributes match almost" do

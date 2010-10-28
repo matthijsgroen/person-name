@@ -43,6 +43,7 @@ module PersonName
 
         base.before_validation :start_name_validation
         base.after_validation :stop_name_validation
+        base.before_save :cache_full_names
         #base.define_scopes
       end
 
@@ -173,6 +174,12 @@ module PersonName
 
         def stop_name_validation
           @name_validation = false
+        end
+
+        def cache_full_names
+          self.class.name_types.map(&:to_s).each do |name_type|
+            write_attribute(name_type.to_sym, person_name_for(name_type).full_name)
+          end
         end
 
       end
