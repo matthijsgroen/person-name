@@ -5,7 +5,7 @@ begin
   require "bundler"
 
   if Gem::Version.new(Bundler::VERSION) <= Gem::Version.new("0.9.5")
-    raise RuntimeError, "Your bundler version is too old." +
+    raise RuntimeError, "Your bundler version.rb is too old." +
      "Run `gem install bundler` to upgrade."
   end
 
