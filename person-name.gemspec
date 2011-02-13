@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "person-name/version"
+require "person_name/version"
 
 Gem::Specification.new do |s|
-  s.name              = "bakery-theme"
+  s.name              = "person-name"
   s.version           = PersonName::VERSION
   s.platform          = Gem::Platform::RUBY
   s.authors           = ["Matthijs Groen"]
