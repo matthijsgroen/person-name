@@ -7,6 +7,8 @@ If you have to fill in a name for somebody, you have to display all those fields
 The goal is to make one field that can split up the name and assign it to the correct fields automatically.
 You can also still use the more precise input if necessary.
 
+[![build status](http://travis-ci.org/matthijsgroen/person-name.png)](http://travis-ci.org/matthijsgroen/person-name)
+
 Installation
 ============
 in your Gemfile:

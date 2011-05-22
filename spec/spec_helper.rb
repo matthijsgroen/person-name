@@ -32,6 +32,7 @@ end
 ENV['DB'] ||= 'sqlite3'
 
 database_yml = File.expand_path('../database.yml', __FILE__)
+database_yml = File.expand_path('../database.yml.sample', __FILE__) unless File.exists?(database_yml)
 if File.exists?(database_yml)
   active_record_configuration = YAML.load_file(database_yml)[ENV['DB']]
   
