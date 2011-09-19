@@ -1,9 +1,12 @@
+require "active_support/core_ext/class/inheritable_attributes"
+
 module PersonName
 
   module ActiveRecord
 
     def self.included(base) # :nodoc:
       base.extend ClassMethods
+      base.class_attribute :name_types
     end
 
     module ClassMethods
@@ -17,10 +20,9 @@ module PersonName
         name_types << :name if name_types.empty?
 
         if has_person_names?
-          write_inheritable_attribute(:name_types, (self.name_types + name_types).uniq)
+          self.name_types = (self.name_types + name_types).uniq
         else
-          write_inheritable_attribute(:name_types, name_types)
-          class_inheritable_reader(:name_types)
+          self.name_types = name_types
 
           class_eval do
             def self.has_person_names?
@@ -102,7 +104,7 @@ module PersonName
         #   the field should make sure the values are comparable (eg. the separated values combined
         #   should be equal to the aggregated one). If this is the case, the separated fields
         #   will rule over the aggregated one, since it is more detailed and adds up to the same result.
-        def attributes=(new_attributes, guard_protected_attributes = true)
+        def attributes=(new_attributes)
           return unless new_attributes.is_a?(Hash)
           attributes = new_attributes.stringify_keys
 
@@ -152,7 +154,7 @@ module PersonName
             end
           end
 
-          super attributes, guard_protected_attributes
+          super attributes
         end
 
         private

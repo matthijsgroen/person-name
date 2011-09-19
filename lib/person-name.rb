@@ -1,4 +1,5 @@
 require "active_record"
+require "active_support"
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 

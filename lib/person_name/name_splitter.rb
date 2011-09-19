@@ -155,7 +155,7 @@ module PersonName
 
         part_score = O[part.to_sym]
         if part_values.include? value
-          part_score = O[:first_name] if stage == O[:prefix] and part = :middle_name
+          part_score = O[:first_name] if stage == O[:prefix] and part == :middle_name
           new_stage = part_score if part_score > new_stage
           return new_stage
         end
