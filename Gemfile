@@ -7,4 +7,4 @@ gem "rails"
 gem "activerecord"
 
 gem 'sqlite3'
-gem 'rspec', "~> 2.0"
+gem 'rspec', ">= 2.0"
